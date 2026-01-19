@@ -27,6 +27,7 @@ extern "C" {
 #include "screens/ui_NetworkInfo.h"
 #include "screens/ui_ModemInfo.h"
 #include "screens/ui_ModemSignal.h"
+#include "screens/ui_Traffic.h"
 
 ///////////////////// VARIABLES ////////////////////
 

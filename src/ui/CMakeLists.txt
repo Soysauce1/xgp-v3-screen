@@ -5,6 +5,7 @@ SET(SOURCES screens/ui_Boot.c
     screens/ui_NetworkInfo.c
     screens/ui_ModemInfo.c
     screens/ui_ModemSignal.c
+    screens/ui_Traffic.c
     ui_theme_manager.c
     ui_themes.c
     ui.c

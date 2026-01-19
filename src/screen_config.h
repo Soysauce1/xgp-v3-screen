@@ -33,6 +33,7 @@ typedef enum {
     PAGE_NETWORK_INFO,
     PAGE_MODEM_INFO,
     PAGE_MODEM_SIGNAL,
+    PAGE_TRAFFIC,
     PAGE_COUNT
 } page_type_t;
 
@@ -44,6 +45,13 @@ typedef struct {
     int order;      // 显示顺序
 } page_config_t;
 
+// 流量监控配置
+typedef struct {
+    char interfaces[16][32];  // 最多16个接口，每个最长32字符
+    int interface_count;
+    bool reset_flag;
+} traffic_config_t;
+
 // 屏幕配置
 typedef struct {
     bool enabled;           // 是否启用屏幕
@@ -54,6 +62,7 @@ typedef struct {
     page_config_t pages[PAGE_COUNT];
     int enabled_page_count;
     page_type_t page_order[PAGE_COUNT];  // 按顺序排列的启用页面
+    traffic_config_t traffic;           // 流量监控配置
 } screen_config_t;
 
 // 全局配置

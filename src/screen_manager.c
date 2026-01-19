@@ -25,6 +25,7 @@ lv_obj_t** screen_manager_get_screen(page_type_t page)
         case PAGE_NETWORK_INFO: return &ui_NetworkInfo;
         case PAGE_MODEM_INFO: return &ui_ModemInfo;
         case PAGE_MODEM_SIGNAL: return &ui_ModemSignal;
+        case PAGE_TRAFFIC: return &ui_Traffic;
         default: return NULL;
     }
 }
@@ -38,6 +39,7 @@ void (*screen_manager_get_init_func(page_type_t page))(void)
         case PAGE_NETWORK_INFO: return ui_NetworkInfo_screen_init;
         case PAGE_MODEM_INFO: return ui_ModemInfo_screen_init;
         case PAGE_MODEM_SIGNAL: return ui_ModemSignal_screen_init;
+        case PAGE_TRAFFIC: return ui_Traffic_screen_init;
         default: return NULL;
     }
 }
@@ -183,6 +185,7 @@ static lv_obj_t* get_page_number_label(page_type_t page)
         case PAGE_NETWORK_INFO: return ui_txtNetworkInfo1;
         case PAGE_MODEM_INFO: return ui_txtModemInfo1;
         case PAGE_MODEM_SIGNAL: return ui_txtModemSignal1;
+        case PAGE_TRAFFIC: return ui_txtTraffic1;
         default: return NULL;
     }
 }

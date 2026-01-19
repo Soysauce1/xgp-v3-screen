@@ -124,6 +124,39 @@ o = s:option(Value, "order", translate("显示顺序"))
 o.datatype = "uinteger"
 o.default = "5"
 
+-- 流量统计页面
+s = m:section(NamedSection, "traffic", "page", translate("流量统计页面"))
+s.addremove = false
+
+o = s:option(Flag, "enabled", translate("启用"))
+o.rmempty = false
+o.default = "1"
+
+o = s:option(Value, "delay", translate("停留时间"), translate("毫秒"))
+o.datatype = "uinteger"
+o.default = "5000"
+
+o = s:option(Value, "order", translate("显示顺序"))
+o.datatype = "uinteger"
+o.default = "6"
+
+-- 流量监控设置
+s = m:section(NamedSection, "settings", "traffic", translate("流量监控设置"))
+s.addremove = false
+
+o = s:option(DynamicList, "interfaces", translate("监控接口"), 
+    translate("要监控的网络接口列表，支持前缀匹配。例如：eth1, wwan, wan, pppoe"))
+o.default = "eth1"
+o.placeholder = "eth1"
+
+o = s:option(Button, "_reset", translate("清零流量统计"))
+o.inputtitle = translate("清零")
+o.inputstyle = "reset"
+function o.write(self, section)
+    luci.sys.call("uci set xgp_screen.settings.reset='1' && uci commit xgp_screen")
+    luci.http.redirect(luci.dispatcher.build_url("admin/services/xgp_screen"))
+end
+
 -- 应用后重启服务
 m.on_after_commit = function(self)
     luci.sys.call("/etc/init.d/zz_xgp_screen restart >/dev/null 2>&1")

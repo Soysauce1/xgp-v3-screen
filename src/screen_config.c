@@ -29,6 +29,10 @@ void init_default_config(void)
         g_screen_config.page_order[i] = (page_type_t)i;
     }
     g_screen_config.enabled_page_count = PAGE_COUNT;
+    
+    // 初始化流量监控默认配置
+    g_screen_config.traffic.interface_count = 0;
+    g_screen_config.traffic.reset_flag = false;
 }
 
 // 页面类型转换函数
@@ -40,6 +44,7 @@ const char* page_type_to_name(page_type_t type)
         case PAGE_NETWORK_INFO: return "network_info";
         case PAGE_MODEM_INFO: return "modem_info";
         case PAGE_MODEM_SIGNAL: return "modem_signal";
+        case PAGE_TRAFFIC: return "traffic";
         default: return "unknown";
     }
 }
@@ -51,6 +56,7 @@ page_type_t page_name_to_type(const char* name)
     if (strcmp(name, "network_info") == 0) return PAGE_NETWORK_INFO;
     if (strcmp(name, "modem_info") == 0) return PAGE_MODEM_INFO;
     if (strcmp(name, "modem_signal") == 0) return PAGE_MODEM_SIGNAL;
+    if (strcmp(name, "traffic") == 0) return PAGE_TRAFFIC;
     return PAGE_COUNT; // 无效
 }
 
@@ -183,12 +189,41 @@ int load_screen_config(void)
                             g_screen_config.pages[page_type].order = atoi(value);
                         }
                     }
+                } else if (strcmp(current_section, "traffic") == 0) {
+                    // 流量监控配置
+                    if (strcmp(key, "reset") == 0) {
+                        g_screen_config.traffic.reset_flag = (atoi(value) != 0);
+                    }
+                }
+            }
+        }
+        
+        // 检查是否是list行 (流量接口列表)
+        if (strcmp(current_section, "traffic") == 0 && strncmp(trimmed, "list interfaces ", 16) == 0) {
+            char value[128];
+            if (sscanf(trimmed, "list interfaces '%127[^']'", value) == 1 ||
+                sscanf(trimmed, "list interfaces %127s", value) == 1) {
+                strip_quotes(value);
+                if (g_screen_config.traffic.interface_count < 16) {
+                    strncpy(g_screen_config.traffic.interfaces[g_screen_config.traffic.interface_count],
+                           value, 31);
+                    g_screen_config.traffic.interfaces[g_screen_config.traffic.interface_count][31] = '\0';
+                    g_screen_config.traffic.interface_count++;
                 }
             }
         }
     }
     
     fclose(fp);
+    
+    // 如果没有配置接口，使用默认值
+    if (g_screen_config.traffic.interface_count == 0) {
+        strcpy(g_screen_config.traffic.interfaces[0], "eth1");
+        strcpy(g_screen_config.traffic.interfaces[1], "wwan");
+        strcpy(g_screen_config.traffic.interfaces[2], "wan");
+        strcpy(g_screen_config.traffic.interfaces[3], "pppoe");
+        g_screen_config.traffic.interface_count = 4;
+    }
     
     // 重新计算页面顺序
     recalculate_page_order();
