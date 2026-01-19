@@ -12,9 +12,9 @@ NLnet XiGuaPi V3 TFT 屏幕控制程序，支持 Web 配置界面。
 
 本项目在原始版本基础上进行了以下改造：
 
-### 1. 移除硬件依赖
-- ✅ 移除对 `kmod-fb-tft-gc9307` 的硬依赖
-- ✅ 使用标准 Linux framebuffer API，支持任意 framebuffer 驱动
+### 1. 硬件驱动集成
+- ✅ 自动依赖 `kmod-fb-tft-gc9307` 驱动包
+- ✅ 使用标准 Linux framebuffer API
 - ✅ 支持通过配置指定 framebuffer 设备路径
 
 ### 2. 新增 LuCI Web 控制界面
@@ -136,7 +136,7 @@ config page 'system_status'
 - `libpthread` - 多线程支持
 - `libstdcpp` - C++ 标准库
 - `luci-base` - LuCI 基础框架
-- Framebuffer 驱动（如 `kmod-fb-tft-gc9307`，需单独安装）
+- `kmod-fb-tft-gc9307` - GC9307 LCD framebuffer 驱动（自动安装）
 
 ## 服务管理
 

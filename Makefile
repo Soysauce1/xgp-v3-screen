@@ -12,14 +12,13 @@ define Package/xgp-v3-screen
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=NLnet XiGuaPi V3 TFT Screen
-	DEPENDS:=+python3 +libpthread +libstdcpp +luci-base
+	DEPENDS:=+python3 +libpthread +libstdcpp +luci-base +kmod-fb-tft-gc9307
 	URL:=https://github.com/zzzz0317/xgp-v3-screen
 endef
 
 define Package/xgp-v3-screen/description
 	NLnet XiGuaPi V3 TFT Screen with integrated LuCI Web UI control.
-	Requires a framebuffer driver (e.g. kmod-fb-tft-gc9307 for GC9307 LCD)
-	to be installed separately for your specific display hardware.
+	Includes GC9307 LCD framebuffer driver (kmod-fb-tft-gc9307).
 endef
 
 define Package/xgp-v3-screen/conffiles
