@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=xgp-v3-screen
-PKG_VERSION:=2.1
+PKG_VERSION:=2.2
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-3.0-only
 
