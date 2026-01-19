@@ -27,6 +27,7 @@ NLnet XiGuaPi V3 TFT 屏幕控制程序，支持 Web 配置界面。
   - 跳过启动/闪屏画面
   - 每个页面独立配置（启用、停留时间、显示顺序）
   - Framebuffer 设备选择
+  - 流量监控接口配置和手动清零
 
 ### 3. 屏幕切换动画
 支持以下动画效果：
@@ -54,6 +55,17 @@ NLnet XiGuaPi V3 TFT 屏幕控制程序，支持 Web 配置界面。
 - ✅ 移除硬编码的屏幕切换逻辑
 - ✅ 由配置文件统一管理屏幕切换
 - ✅ 关闭屏幕时自动关闭背光并清空显示
+
+### 7. 新增流量监控页面
+- ✅ 实时显示WAN接口上传/下载流量统计
+- ✅ 支持自定义监控接口列表（eth1, wwan, wan, pppoe等）
+- ✅ 支持前缀匹配，灵活配置移动网络接口
+- ✅ 自动累加多个WAN接口流量（支持双WAN场景）
+- ✅ 数据持久化存储（`/etc/xgp_screen_traffic.dat`）
+- ✅ 每日零点自动重置当日统计
+- ✅ 手动清零功能（LuCI界面或命令行）
+- ✅ 智能单位转换（B/KB/MB/GB自动选择）
+- ✅ 每2秒自动刷新数据
 
 ## 项目结构
 
@@ -138,6 +150,12 @@ config screen 'main'
     option skip_boot '0'
     option skip_splash '0'
 
+config traffic 'settings'
+    list interfaces 'eth1'
+    list interfaces 'wwan0'
+    list interfaces 'wwan0_1'
+    option reset '0'
+
 config page 'system_info'
     option enabled '1'
     option delay '5000'
@@ -148,7 +166,42 @@ config page 'system_status'
     option delay '5000'
     option order '2'
 
+config page 'traffic'
+    option enabled '1'
+    option delay '5000'
+    option order '6'
+
 # ... 更多页面配置
+```
+
+### 流量统计功能
+
+**支持的接口类型：**
+- 有线WAN: `eth1`
+- 移动网络: `wwan0`, `wwan0_1`, `wwan1` 等
+- PPPoE拨号: `pppoe-wan`
+- 通用WAN: `wan`, `wan6`
+
+**配置示例：**
+```bash
+# 添加监控接口
+uci add_list xgp_screen.settings.interfaces='eth1'
+uci add_list xgp_screen.settings.interfaces='wwan'
+uci commit xgp_screen
+
+# 手动清零流量统计
+uci set xgp_screen.settings.reset='1'
+uci commit xgp_screen
+/etc/init.d/zz_xgp_screen restart
+
+# 清零后标志会自动重置为0
+```
+
+**数据存储：**
+- 位置: `/etc/xgp_screen_traffic.dat`
+- 格式: 二进制格式，包含总流量和当日流量
+- 更新频率: 每2秒
+- 重置时间: 每日00:00自动重置当日统计
 ```
 
 ## 依赖
