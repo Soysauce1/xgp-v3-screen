@@ -12,10 +12,11 @@ NLnet XiGuaPi V3 TFT 屏幕控制程序，支持 Web 配置界面。
 
 本项目在原始版本基础上进行了以下改造：
 
-### 1. 硬件驱动集成
-- ✅ 自动依赖 `kmod-fb-tft-gc9307` 驱动包
+### 1. 集成硬件驱动
+- ✅ 内置 `kmod-fb-tft-gc9307` 驱动源码，无需单独安装
 - ✅ 使用标准 Linux framebuffer API
 - ✅ 支持通过配置指定 framebuffer 设备路径
+- ✅ 编译时自动构建驱动和应用两个包
 
 ### 2. 新增 LuCI Web 控制界面
 - ✅ 集成到 OpenWrt 管理界面（服务 → XGP Screen）
@@ -58,7 +59,13 @@ NLnet XiGuaPi V3 TFT 屏幕控制程序，支持 Web 配置界面。
 
 ```
 xgp-v3-screen/
-├── Makefile                    # OpenWrt 包构建文件
+├── Makefile                    # OpenWrt 包构建文件（包含驱动和应用）
+├── kmod-fb-tft-gc9307/        # GC9307 驱动源码
+│   ├── src/
+│   │   ├── fb_gc9307.c
+│   │   ├── fbtft.h
+│   │   └── Makefile
+│   └── LICENSE-DRIVER
 ├── files/
 │   ├── modem_info.py          # Modem 信息获取脚本
 │   ├── xgp_screen.config      # 默认 UCI 配置
@@ -78,6 +85,15 @@ xgp-v3-screen/
 
 ## 编译安装
 
+### 前置条件
+
+确保您的 OpenWrt 编译环境已经选择了以下内核模块：
+```bash
+make menuconfig
+# 进入: Kernel modules → Video Support → kmod-fb-tft
+# 确保 kmod-fb-tft 已选中（驱动依赖此包）
+```
+
 ### 1. 放置源码
 ```bash
 # 将项目放入 OpenWrt 的 package 目录
@@ -95,9 +111,14 @@ make menuconfig
 make package/xgp-v3-screen/compile -j$(nproc)
 ```
 
+编译完成后会生成两个包：
+- `kmod-fb-tft-gc9307-*.apk` - GC9307 LCD 驱动（内核模块）
+- `xgp-v3-screen-*.apk` - 屏幕控制程序（依赖驱动包）
+
 ### 4. 安装
 ```bash
 # APK 包管理器 (ImmortalWrt 25.x)
+# 驱动会作为依赖自动安装
 apk add --allow-untrusted xgp-v3-screen-*.apk
 
 # OPKG 包管理器 (OpenWrt)
@@ -132,11 +153,17 @@ config page 'system_status'
 
 ## 依赖
 
+**编译依赖：**
+- OpenWrt 编译环境
+- `kmod-fb-tft` - Linux framebuffer TFT 驱动框架（必须先在内核中选中）
+
+**运行时依赖：**
 - `python3` - Modem 信息获取
 - `libpthread` - 多线程支持
 - `libstdcpp` - C++ 标准库
 - `luci-base` - LuCI 基础框架
-- `kmod-fb-tft-gc9307` - GC9307 LCD framebuffer 驱动（自动安装）
+- `kmod-fb-tft` - 会自动安装
+- `kmod-fb-tft-gc9307` - GC9307 LCD framebuffer 驱动（已集成，自动编译和安装）
 
 ## 服务管理
 
@@ -161,4 +188,6 @@ GPL-3.0-only
 ## 致谢
 
 - 原始项目作者 [zzzz0317](https://github.com/zzzz0317)
+  - [xgp-v3-screen](https://github.com/zzzz0317/xgp-v3-screen) - 屏幕控制程序
+  - [kmod-fb-tft-gc9307](https://github.com/zzzz0317/kmod-fb-tft-gc9307) - GC9307 驱动
 - [LVGL](https://lvgl.io/) - 嵌入式图形库
