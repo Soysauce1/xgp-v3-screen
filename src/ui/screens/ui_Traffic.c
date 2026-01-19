@@ -235,6 +235,12 @@ static void update_traffic_display(void)
     lv_label_set_text(ui_TrafficTotalTxValue, buffer);
 }
 
+// 定时器回调函数
+static void traffic_timer_cb(lv_timer_t *timer)
+{
+    update_traffic_display();
+}
+
 void ui_Traffic_screen_init(void)
 {
     ui_Traffic = lv_obj_create(NULL);
@@ -338,15 +344,5 @@ void ui_Traffic_screen_init(void)
     update_traffic_display();
     
     // 设置定时器，每2秒更新一次
-    lv_timer_t *timer = lv_timer_create([](lv_timer_t *t) {
-        update_traffic_display();
-    }, 2000, NULL);
-}
-
-// 更新页码显示
-void ui_Traffic_update_page_number(int current, int total)
-{
-    char buffer[32];
-    snprintf(buffer, sizeof(buffer), "%d/%d", current, total);
-    lv_label_set_text(ui_txtTraffic1, buffer);
+    lv_timer_create(traffic_timer_cb, 2000, NULL);
 }
