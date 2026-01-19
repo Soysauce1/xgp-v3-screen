@@ -11,6 +11,7 @@ extern "C" {
 #include "../ui.h"
 
 extern lv_obj_t * ui_Traffic;
+extern lv_obj_t * ui_txtTraffic1;
 void ui_Traffic_screen_init(void);
 
 #ifdef __cplusplus

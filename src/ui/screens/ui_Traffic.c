@@ -23,7 +23,7 @@ static lv_obj_t * ui_TrafficTotalRxLabel;
 static lv_obj_t * ui_TrafficTotalRxValue;
 static lv_obj_t * ui_TrafficTotalTxLabel;
 static lv_obj_t * ui_TrafficTotalTxValue;
-static lv_obj_t * ui_TrafficPageNum;
+lv_obj_t * ui_txtTraffic1;
 
 // 流量统计结构
 typedef struct {
@@ -326,13 +326,13 @@ void ui_Traffic_screen_init(void)
     lv_obj_set_style_text_font(ui_TrafficTotalTxValue, &ui_font_MiSans20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // 页码
-    ui_TrafficPageNum = lv_label_create(ui_Traffic);
-    lv_obj_set_width(ui_TrafficPageNum, LV_SIZE_CONTENT);
-    lv_obj_set_height(ui_TrafficPageNum, LV_SIZE_CONTENT);
-    lv_obj_set_align(ui_TrafficPageNum, LV_ALIGN_BOTTOM_MID);
-    lv_obj_set_y(ui_TrafficPageNum, -5);
-    lv_label_set_text(ui_TrafficPageNum, "");
-    lv_obj_set_style_text_font(ui_TrafficPageNum, &ui_font_MiSans16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_txtTraffic1 = lv_label_create(ui_Traffic);
+    lv_obj_set_width(ui_txtTraffic1, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_txtTraffic1, LV_SIZE_CONTENT);
+    lv_obj_set_align(ui_txtTraffic1, LV_ALIGN_BOTTOM_MID);
+    lv_obj_set_y(ui_txtTraffic1, -5);
+    lv_label_set_text(ui_txtTraffic1, "");
+    lv_obj_set_style_text_font(ui_txtTraffic1, &ui_font_MiSans16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // 初始更新
     update_traffic_display();
@@ -348,5 +348,5 @@ void ui_Traffic_update_page_number(int current, int total)
 {
     char buffer[32];
     snprintf(buffer, sizeof(buffer), "%d/%d", current, total);
-    lv_label_set_text(ui_TrafficPageNum, buffer);
+    lv_label_set_text(ui_txtTraffic1, buffer);
 }
