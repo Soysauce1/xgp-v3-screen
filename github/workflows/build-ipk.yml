@@ -1,0 +1,46 @@
+name: Auto Build XGP-V3 IPK
+
+# 触发条件：推送到 main 分支时自动编译
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # 保留手动触发入口
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential libncurses5-dev libssl-dev git unzip python3 rsync wget flex bison
+
+      - name: Download ImmortalWrt SDK (rockchip/armv8)
+        run: |
+          wget https://downloads.immortalwrt.org/releases/24.10-SNAPSHOT/targets/rockchip/armv8/immortalwrt-sdk-24.10-SNAPSHOT-rockchip-armv8_gcc-13.3_musl.Linux-x86_64.tar.xz
+          tar xJf immortalwrt-sdk-*.tar.xz
+          mv immortalwrt-sdk-* immortalwrt-sdk
+
+      - name: Link your package to SDK
+        run: |
+          mkdir -p immortalwrt-sdk/package/xgp-v3-screen
+          cp -r $(pwd)/. immortalwrt-sdk/package/xgp-v3-screen/
+
+      - name: Build IPK package
+        run: |
+          cd immortalwrt-sdk
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          make defconfig
+          make package/xgp-v3-screen/compile V=s -j2
+
+      - name: Upload IPK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xgp-v3-screen-ipk
+          path: immortalwrt-sdk/bin/packages/aarch64_generic/base/xgp-v3-screen_*.ipk
